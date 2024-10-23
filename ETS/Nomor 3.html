@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Kontak</title>
+    <style>
+        body {
+            background-color: greenyellow;
+        }
+    </style>
+</head>
+<body>
+    <form id="kontak" method="" action="">
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" name="name" id="name"></td>
+            </tr>
+            <tr>
+                <td>Email:</td>
+                <td><input type="email" name="email" id="email"></td>
+            </tr>
+            <tr>
+                <td>Phone:</td>
+                <td><input type="tel" name="phone" value="+62" id="phone"></td>
+            </tr>
+            <tr>
+                <td>Message:</td>
+                <td><textarea name="message" id="message" rows="4" cols="60"></textarea></td>
+            </tr>
+        </table>
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        const nama = document.getElementById('name');
+        const email = document.getElementById('email');
+        const nomor = document.getElementById('phone');
+        const pesan = document.getElementById('message');
+        const hasil = document.getElementById('result');
+
+        document.getElementById('kontak').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const filledName = nama.value;
+            const filledEmail = email.value;
+            const filledPhone = nomor.value;
+            const filledMessage = pesan.value;
+
+            if (filledName && filledEmail && filledPhone && filledMessage) {
+                hasil.innerHTML = 'Pesan berhasil dikirim.';
+                nama.value = '';
+                email.value = '';
+                nomor.value = '';
+                pesan.value = '';
+            } else {
+                hasil.innerHTML = 'Mohon lengkapi semua pilihan.';
+            }
+        });
+    </script>
+</body>
+</html>
