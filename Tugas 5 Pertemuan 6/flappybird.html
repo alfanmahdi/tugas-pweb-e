@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #87CEEB; /* Latar langit biru */
+            overflow: hidden;
+        }
+        canvas {
+            border: 2px solid #000;
+            display: block;
+            background-color: #87CEEB;
+        }
+    </style>
+</head>
+<body>
+    <!-- Canvas untuk game -->
+    <canvas id="flappyCanvas" width="480" height="640"></canvas>
+
+    <script>
+        // Inisialisasi canvas
+        const canvas = document.getElementById("flappyCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Variabel game
+        const GRAVITY = 1.5;
+        const BIRD_JUMP = -15;
+        const PIPE_WIDTH = 80;
+        const PIPE_GAP = 150;
+        let gameOver = false;
+        let score = 0;
+
+        // Objek burung
+        const bird = {
+            x: 50,
+            y: 150,
+            width: 30,
+            height: 30,
+            velocityY: 0
+        };
+
+        // Array pipa
+        let pipes = [];
+        pipes.push({
+            x: canvas.width,
+            height: Math.floor(Math.random() * (canvas.height / 2)) + 50
+        });
+
+        // Fungsi untuk menggambar burung
+        function drawBird() {
+            ctx.fillStyle = "yellow";
+            ctx.beginPath();
+            ctx.arc(bird.x, bird.y, bird.width / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Fungsi menggambar pipa
+        function drawPipes() {
+            ctx.fillStyle = "green";
+            pipes.forEach(pipe => {
+                // Pipa atas
+                ctx.fillRect(pipe.x, 0, PIPE_WIDTH, pipe.height);
+                // Pipa bawah
+                ctx.fillRect(pipe.x, pipe.height + PIPE_GAP, PIPE_WIDTH, canvas.height - pipe.height - PIPE_GAP);
+            });
+        }
+
+        // Logika jatuhnya burung
+        function updateBird() {
+            bird.velocityY += GRAVITY;
+            bird.y += bird.velocityY;
+
+            if (bird.y + bird.height / 2 >= canvas.height || bird.y - bird.height / 2 <= 0) {
+                endGame();
+            }
+        }
+
+        // Logika pipa
+        function updatePipes() {
+            pipes.forEach(pipe => {
+                pipe.x -= 3; // Pipa bergerak ke kiri
+
+                // Tambah skor saat melewati pipa
+                if (pipe.x + PIPE_WIDTH === bird.x) {
+                    score++;
+                }
+
+                // Deteksi tabrakan
+                if (
+                    bird.x + bird.width / 2 > pipe.x &&
+                    bird.x - bird.width / 2 < pipe.x + PIPE_WIDTH &&
+                    (bird.y - bird.height / 2 < pipe.height || bird.y + bird.height / 2 > pipe.height + PIPE_GAP)
+                ) {
+                    endGame();
+                }
+            });
+
+            // Hapus pipa yang keluar layar dan tambahkan pipa baru
+            if (pipes[0].x + PIPE_WIDTH < 0) {
+                pipes.shift();
+                pipes.push({
+                    x: canvas.width,
+                    height: Math.floor(Math.random() * (canvas.height / 2)) + 50
+                });
+            }
+        }
+
+        // Fungsi game over
+        function endGame() {
+            gameOver = true;
+            ctx.fillStyle = "black";
+            ctx.font = "30px Arial";
+            ctx.fillText("Game Over", canvas.width / 2 - 80, canvas.height / 2);
+        }
+
+        // Fungsi untuk menggambar skor
+        function drawScore() {
+            ctx.fillStyle = "black";
+            ctx.font = "20px Arial";
+            ctx.fillText("Score: " + score, 10, 30);
+        }
+
+        // Fungsi utama game loop
+        function gameLoop() {
+            if (!gameOver) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                drawBird();
+                drawPipes();
+                drawScore();
+
+                updateBird();
+                updatePipes();
+
+                requestAnimationFrame(gameLoop);
+            }
+        }
+
+        // Event listener untuk melompat
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "Space") {
+                bird.velocityY = BIRD_JUMP;
+            }
+        });
+
+        // Mulai game
+        gameLoop();
+    </script>
+</body>
+</html>
